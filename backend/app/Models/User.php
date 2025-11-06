@@ -44,4 +44,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+     public function ownedAlbums()
+    {
+        return $this->hasMany(Album::class, 'owner_id');
+    }
+
+    public function sharedAlbums()
+    {
+        return $this->belongsToMany(Album::class, 'album_users');
+    }
+
+    public function photos()
+    {
+        return $this->hasMany(Photo::class, 'uploader_id');
+    }
+
 }
