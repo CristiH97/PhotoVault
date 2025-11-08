@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Album extends Model
@@ -23,5 +24,11 @@ class Album extends Model
     public function photos()
     {
         return $this->hasMany(Photo::class);
+    }
+
+    public function scopeAccessibleTo(Builder $query, User $user): Builder
+    {
+        return $query->where('owner_id', $user->id)
+            ->orWhereHas('sharedUsers', fn ($q) => $q->whereKey($user->id));
     }
 }

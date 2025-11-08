@@ -5,9 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Album;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class AlbumController extends Controller
 {
+
+    public function getUserAlbums(){
+            Gate::authorize('viewAny', Album::class);
+
+            $user = Auth::user();
+
+            $albums = Album::query()
+            ->accessibleTo($user)
+            ->withCount('photos')          
+            ->orderByDesc('updated_at')->get();
+            
+            return response($albums);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +44,18 @@ class AlbumController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Gate::authorize('create', Album::class);
+
+        $fields = $request->validate([
+            'title' => 'string|required',
+        ]);
+        $user = Auth::user();
+
+        $album = Album::create([
+            'owner_id' => $user->id,
+            'title' =>$fields['title']
+        ]);
+        return response($album,201);
     }
 
     /**
@@ -53,7 +79,15 @@ class AlbumController extends Controller
      */
     public function update(Request $request, Album $album)
     {
-        //
+        Gate::authorize('update', $album);
+
+        $validated = $request->validate([
+            'title' => 'string|required'
+        ]);
+
+        $album->update($validated);
+
+        return response($album,201);
     }
 
     /**
@@ -61,6 +95,8 @@ class AlbumController extends Controller
      */
     public function destroy(Album $album)
     {
-        //
+        Gate::authorize('delete', $album);
+
+        $album->delete();
     }
 }

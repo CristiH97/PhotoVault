@@ -13,7 +13,11 @@ class PhotoController extends Controller
      */
     public function index()
     {
-        //
+        
+    }
+
+    public function getAllPhotosFromAlbum(Request $request){
+        
     }
 
     /**
