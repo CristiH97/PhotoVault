@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Photo;
+use App\Models\Album;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class PhotoController extends Controller
 {
@@ -16,8 +21,25 @@ class PhotoController extends Controller
         
     }
 
-    public function getAllPhotosFromAlbum(Request $request){
+    public function getAllPhotosFromAlbum(Album $album){
+        Gate::authorize('view', $album);
+
+        $photos = $album->photos()->orderByDesc('created_at')->get();
+        $response = [];
+        foreach($photos as $photo){
+            $response[] = [
+                'id' => $photo->id,
+                'filename' => $photo->filename,
+                'type' => $photo->type,
+                'size' => $photo->size,
+                'uploader_name' => $photo->uploader_name,
+                'url' => Storage::temporaryUrl(
+                    $photo->path,
+                    now()->addMinutes(5)),
+                ];   
+        }
         
+        return response($response);
     }
 
     /**
@@ -31,9 +53,47 @@ class PhotoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Album $album)
     {
-        //
+        Gate::authorize('addPhoto', $album);
+
+        $request->validate([
+        'photo' => ['required', 'image', 'max:5120'], // 5 MB limit
+        ]);
+
+        $file = $request->file('photo');
+        $user = $request->user();
+        $extension = $file->getClientOriginalExtension();
+        $filename = Str::uuid() . '.' . $extension;
+
+        $key = "users/{$user->id}/albums/{$album->id}/photos/{$filename}";
+
+        Storage::put($key, file_get_contents($file));
+
+        $photo = $album->photos()->create([
+            'uploader_id' => $user->id,
+            'uploader_name' => $user->name,
+            'filename' => $filename,
+            'type' => $extension,
+            'size' =>$file->getSize(),
+            'path' => $key, 
+        ]);
+
+        return response()->json([
+        'message' => 'Photo uploaded successfully',
+        'photo' => [
+            'id' => $photo->id,
+            'filename' => $photo->filename,
+            'type' => $photo->type,
+            'size' => $photo->size,
+            'uploader_name' => $photo->uploader_name,
+            'url' => Storage::temporaryUrl(
+                $photo->path,
+                now()->addMinutes(5)
+            ),
+        ],
+    ], 201);
+
     }
 
     /**
@@ -65,6 +125,10 @@ class PhotoController extends Controller
      */
     public function destroy(Photo $photo)
     {
-        //
+        Gate::authorize('delete',$photo);
+
+        Storage::delete($photo->path);
+        $photo->delete();
+
     }
 }

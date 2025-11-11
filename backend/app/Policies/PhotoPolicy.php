@@ -2,26 +2,27 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
 use App\Models\Album;
+use Illuminate\Auth\Access\Response;
+use App\Models\Photo;
 use App\Models\User;
 
-class AlbumPolicy
+class PhotoPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return false;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Album $album): bool
+    public function view(User $user, Photo $photo): bool
     {
-         return $album->owner_id === $user->id || $album->sharedWith()->whereKey($user->id)->exists();
+        return false;
     }
 
     /**
@@ -29,34 +30,30 @@ class AlbumPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+         return false;
     }
 
-    public function addPhoto(User $user, Album $album):bool {
-        return $album->owner_id === $user->id
-        || $album->sharedUsers()->whereKey($user->id)->exists();
-    }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Album $album): bool
+    public function update(User $user, Photo $photo): bool
     {
-        return $user->id === $album->owner_id;
+        return false;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Album $album): bool
+    public function delete(User $user, Photo $photo): bool
     {
-        return $user->id === $album->owner_id;
+        return $user->id === $photo->uploader_id;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Album $album): bool
+    public function restore(User $user, Photo $photo): bool
     {
         return false;
     }
@@ -64,7 +61,7 @@ class AlbumPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Album $album): bool
+    public function forceDelete(User $user, Photo $photo): bool
     {
         return false;
     }
