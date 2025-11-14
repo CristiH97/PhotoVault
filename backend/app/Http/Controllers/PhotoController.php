@@ -15,30 +15,50 @@ class PhotoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        
+
     }
 
-    public function getAllPhotosFromAlbum(Album $album){
+    public function getAllPhotosFromAlbum(Album $album, Request $request){
         Gate::authorize('view', $album);
 
-        $photos = $album->photos()->orderByDesc('created_at')->get();
+        $query = $album->photos();
+
+        if ($request->filled('uploader_id')) {
+            $query->where('uploader_id', $request->uploader_id);
+        }
+
+        $sort = $request->input('sort', 'newest');
+        if ($sort === 'oldest') {
+            $query->orderBy('created_at', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $photos = $query->cursorPaginate(30);
+
         $response = [];
-        foreach($photos as $photo){
+
+        foreach ($photos as $photo) {
             $response[] = [
-                'id' => $photo->id,
-                'filename' => $photo->filename,
-                'type' => $photo->type,
-                'size' => $photo->size,
+                'id'            => $photo->id,
+                'filename'      => $photo->filename,
+                'type'          => $photo->type,
+                'size'          => $photo->size,
                 'uploader_name' => $photo->uploader_name,
                 'url' => Storage::temporaryUrl(
                     $photo->path,
-                    now()->addMinutes(5)),
-                ];   
+                    now()->addMinutes(5)
+                ),
+            ];
         }
-        
-        return response($response);
+
+        return response()->json([
+            'data'        => $response,
+            'next_cursor' => $photos->nextCursor()?->encode(),
+        ]);
+
     }
 
     /**
