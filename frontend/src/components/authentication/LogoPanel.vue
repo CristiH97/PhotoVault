@@ -30,7 +30,7 @@ import { Icon } from '@iconify/vue'
         </li>
       </ul>
     </div>
-    <div class="photos-container border">
+    <div class="photos-container">
       <img :src="image1" alt="Image 1" />
       <img :src="image2" alt="Image 2" />
       <img :src="image3" alt="Image 3" />

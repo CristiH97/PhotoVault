@@ -1,12 +1,19 @@
 <script setup>
 import LogoPanel from '@/components/authentication/LogoPanel.vue'
 import LoginRegisterPanel from '@/components/authentication/LoginAndRegisterPanel.vue'
+import { ref } from 'vue'
+
+const swapped = ref(false)
+
+function swapPanels() {
+  swapped.value = !swapped.value
+}
 </script>
 <template>
   <section class="wrapper">
-    <section class="auth-container">
+    <section class="auth-container" :class="{ swap: swapped }">
       <div class="left-container">
-        <LoginRegisterPanel></LoginRegisterPanel>
+        <LoginRegisterPanel @swap="swapPanels"></LoginRegisterPanel>
       </div>
       <div class="right-container">
         <LogoPanel></LogoPanel>
@@ -30,16 +37,30 @@ import LoginRegisterPanel from '@/components/authentication/LoginAndRegisterPane
 
 .auth-container {
   display: flex;
+
+  border-radius: 1.5rem;
+  overflow: hidden;
+
+  box-shadow: 0px 0px 8px 0px rgba(179, 179, 179, 0.5);
 }
 .auth-container > * {
-  border: 1px solid black;
   background-color: aqua;
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
+
+  transition: transform 0.4s ease;
+}
+
+.swap .left-container {
+  transform: translateX(100%);
+}
+
+.swap .right-container {
+  transform: translateX(-100%);
 }
 
 @media (min-aspect-ratio: 21/9) {
   .auth-container {
-    background-color: red;
     aspect-ratio: 1.5;
     width: 50%;
   }
@@ -50,7 +71,6 @@ import LoginRegisterPanel from '@/components/authentication/LoginAndRegisterPane
 
 @media (min-aspect-ratio: 16/10) and (max-aspect-ratio: 21/9) {
   .auth-container {
-    background-color: orange;
     aspect-ratio: 1.5;
     width: 50%;
   }
@@ -60,7 +80,6 @@ import LoginRegisterPanel from '@/components/authentication/LoginAndRegisterPane
 }
 @media (min-aspect-ratio: 4/3) and (max-aspect-ratio: 16/10) {
   .auth-container {
-    background-color: yellow;
     aspect-ratio: 1.4;
     width: 55%;
   }
@@ -70,7 +89,6 @@ import LoginRegisterPanel from '@/components/authentication/LoginAndRegisterPane
 }
 @media (min-aspect-ratio: 1/1) and (max-aspect-ratio: 4/3) {
   .auth-container {
-    background-color: green;
     aspect-ratio: 1.3;
     width: 60%;
   }
@@ -81,7 +99,6 @@ import LoginRegisterPanel from '@/components/authentication/LoginAndRegisterPane
 
 @media (max-aspect-ratio: 1/1) {
   .auth-container {
-    background-color: maroon;
     aspect-ratio: 1.3;
     width: 95%;
   }
