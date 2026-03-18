@@ -1,8 +1,17 @@
 <script setup>
-import LogoPanel from '@/components/authentication/LogoPanel.vue'
-import LoginRegisterPanel from '@/components/authentication/LoginAndRegisterPanel.vue'
+/**
+ * AuthenticationView Component
+ *
+ * Responsibilities:
+ * - Displays AuthPanel and PromoPanel
+ * - Manage swapping animation between AuthPanel and PromoPanel
+ */
+
+import PromoPanel from '@/components/authentication/PromoPanel.vue'
+import AuthPanel from '@/components/authentication/AuthPanel.vue'
 import { ref } from 'vue'
 
+// Tracks whether the auth and promo panels are swapped
 const swapped = ref(false)
 
 function swapPanels() {
@@ -13,10 +22,10 @@ function swapPanels() {
   <section class="wrapper">
     <section class="auth-container" :class="{ swap: swapped }">
       <div class="left-container">
-        <LoginRegisterPanel @swap="swapPanels"></LoginRegisterPanel>
+        <AuthPanel @swap="swapPanels"></AuthPanel>
       </div>
       <div class="right-container">
-        <LogoPanel></LogoPanel>
+        <PromoPanel></PromoPanel>
       </div>
     </section>
   </section>
@@ -51,6 +60,7 @@ function swapPanels() {
   transition: transform 0.4s ease;
 }
 
+/* Panel swap animation*/
 .swap .left-container {
   transform: translateX(100%);
 }
@@ -59,6 +69,7 @@ function swapPanels() {
   transform: translateX(-100%);
 }
 
+/* Ultra-wide screens (21:9 and wider) */
 @media (min-aspect-ratio: 21/9) {
   .auth-container {
     aspect-ratio: 1.5;
@@ -69,6 +80,7 @@ function swapPanels() {
   }
 }
 
+/* Widescreen displays (16:10 to 21:9) */
 @media (min-aspect-ratio: 16/10) and (max-aspect-ratio: 21/9) {
   .auth-container {
     aspect-ratio: 1.5;
@@ -78,6 +90,8 @@ function swapPanels() {
     background-color: orange;
   }
 }
+
+/* Standard monitors (4:3 to 16:10) */
 @media (min-aspect-ratio: 4/3) and (max-aspect-ratio: 16/10) {
   .auth-container {
     aspect-ratio: 1.4;
@@ -87,6 +101,8 @@ function swapPanels() {
     background-color: yellow;
   }
 }
+
+/* Square to slightly wide screens (1:1 to 4:3) */
 @media (min-aspect-ratio: 1/1) and (max-aspect-ratio: 4/3) {
   .auth-container {
     aspect-ratio: 1.3;
@@ -97,6 +113,7 @@ function swapPanels() {
   }
 }
 
+/* Portrait / narrow screens (below 1:1) */
 @media (max-aspect-ratio: 1/1) {
   .auth-container {
     aspect-ratio: 1.3;

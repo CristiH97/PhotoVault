@@ -27,8 +27,8 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
     Route::get('/albums/{album}/photos', [PhotoController::class, 'getAllPhotosFromAlbum']);
     Route::post('/albums/{album}/photos', [PhotoController::class, 'store']);
     Route::delete('/albums/{album}/photos', [PhotoController::class, 'destroy']);
-
-    Route::get("/test", function (Request $request) {
-    return "testtt";
+    Route::get('/check', function (Request $request) {
+        return response()->json(['status' => 'ok']);
     });
+
 });

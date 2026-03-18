@@ -1,4 +1,11 @@
 <script setup>
+/**
+ * Promotional Panel Component
+ *
+ * Displays the application logo, key feature highlights, and sample photos.
+ *
+ */
+
 import image1 from '@/assets/images/authentication/image1.png'
 import image2 from '@/assets/images/authentication/image2.png'
 import image3 from '@/assets/images/authentication/image3.png'
@@ -112,6 +119,9 @@ import { Icon } from '@iconify/vue'
 
   z-index: 1;
 }
+
+/* Individual image positioning and rotation */
+
 .photos-container img:nth-child(1) {
   left: 5%;
   transform: rotate(5deg);
@@ -133,6 +143,7 @@ import { Icon } from '@iconify/vue'
   z-index: 0;
 }
 
+/* === Responsive: Wide Screens (Landscape tablets / small desktops) === */
 @media (min-aspect-ratio: 4/3) and (max-aspect-ratio: 16/10) {
   .photos-container img:nth-child(1) {
     top: 5%;
@@ -163,6 +174,7 @@ import { Icon } from '@iconify/vue'
   }
 }
 
+/* === Responsive: Medium Screens === */
 @media (min-aspect-ratio: 1/1) and (max-aspect-ratio: 4/3) {
   .photos-container img:nth-child(1) {
     left: 3%;
@@ -196,6 +208,7 @@ import { Icon } from '@iconify/vue'
   }
 }
 
+/* === Responsive: Mobile / Square Screens === */
 @media (max-aspect-ratio: 1/1) {
   .photos-container img {
     width: 34%;
