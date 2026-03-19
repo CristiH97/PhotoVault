@@ -68,6 +68,14 @@ The dashboard and main user interface are currently under development.
 
 ---
 
+## 🎬 Demo
+
+Here’s a short preview of the authentication page:
+
+![PhotoVault Demo](assets/PhotoVaultGif.gif)
+
+---
+
 ## 📚 What I Learned
 
 ### ☁️ Working with AWS S3
