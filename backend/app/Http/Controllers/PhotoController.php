@@ -20,6 +20,9 @@ class PhotoController extends Controller
 
     }
 
+    /**
+    * Retrieve all photos from a given album with optional filtering and sorting.
+     */
     public function getAllPhotosFromAlbum(Album $album, Request $request){
         Gate::authorize('view', $album);
 
@@ -29,6 +32,7 @@ class PhotoController extends Controller
             $query->where('uploader_id', $request->uploader_id);
         }
 
+        // Sort photos by creation date (default: newest first)
         $sort = $request->input('sort', 'newest');
         if ($sort === 'oldest') {
             $query->orderBy('created_at', 'asc');
@@ -70,8 +74,8 @@ class PhotoController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
+    * Store a new photo in the specified album.
+    */
     public function store(Request $request, Album $album)
     {
         Gate::authorize('addPhoto', $album);
@@ -82,11 +86,15 @@ class PhotoController extends Controller
 
         $file = $request->file('photo');
         $user = $request->user();
+
+        // Generate a unique filename for storage
         $extension = $file->getClientOriginalExtension();
         $filename = Str::uuid() . '.' . $extension;
 
+         // Construct S3 key/path for storing the photo
         $key = "users/{$user->id}/albums/{$album->id}/photos/{$filename}";
 
+        // Store the file in AWS S3
         Storage::put($key, file_get_contents($file));
 
         $photo = $album->photos()->create([

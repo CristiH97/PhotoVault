@@ -32,6 +32,9 @@ class AlbumPolicy
         return true;
     }
 
+    /**
+     * Determine whether the user can add photo to album.
+     */
     public function addPhoto(User $user, Album $album):bool {
         return $album->owner_id === $user->id
         || $album->sharedUsers()->whereKey($user->id)->exists();

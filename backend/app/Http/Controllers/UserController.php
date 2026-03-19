@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
 
+
+    /**
+    * Register a new user.
+    */
     public function register(Request $request){
         $fields = $request->validate([
             'name'=> 'required|string|unique:users,name',
@@ -23,6 +27,8 @@ class UserController extends Controller
             'username'=> $fields['username'],
             'password'=> Hash::make($fields['password']),
         ]);
+
+        // Generate a personal access token for API authentication
         $token = $user->createToken('usertoken')->plainTextToken;
 
         $response = [
@@ -30,15 +36,24 @@ class UserController extends Controller
         ];
         return response($response,201);
     }
+
+    /**
+    * Authenticate a user and issue a new API token.
+    */
     public function login(Request $request){
         $fields = $request->validate([
             'username'=> 'required|string',
             'password' => 'required|string', 
             ]);
+
         $user = User::where('username', $fields['username'])->first();
+
+        // Check if user exists and password matches
         if(!$user || !Hash::check($fields['password'], $user->password)){
             return response(['message' => 'Bad credentials'],401);
         }
+
+        // Generate a new API token
         $token = $user->createToken('usertoken')->plainTextToken;
         $response = [
             'name' => $user->name,
@@ -48,6 +63,9 @@ class UserController extends Controller
 
     }
 
+    /**
+    * Logout the authenticated user.
+    */
     public function logout(Request $request){
         $request->user()->tokens()->delete();
         return ['message' => 'Logged out'];

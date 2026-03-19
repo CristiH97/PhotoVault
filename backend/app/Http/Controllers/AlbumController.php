@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 class AlbumController extends Controller
 {
 
+    /**
+     * Retrieve all albums accessible to the authenticated user.
+     */
     public function getUserAlbums(){
             Gate::authorize('viewAny', Album::class);
 
