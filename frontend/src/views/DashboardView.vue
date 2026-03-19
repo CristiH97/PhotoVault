@@ -9,5 +9,5 @@
 </script>
 <template>
   <section>This is a redirect</section>
-  <style scoped></style>
 </template>
+<style scoped></style>
